@@ -133,7 +133,11 @@ class QuizGame:
     def play(self):
         score = 0
         total = len(self.quizzes)
-
+        
+        if total == 0:
+            print("등록된 퀴즈가 없습니다. 먼저 퀴즈를 추가해 주세요.")
+            return
+        
         print("\n퀴즈 게임을 시작합니다!")
 
         for index, quiz in enumerate(self.quizzes, start=1):
