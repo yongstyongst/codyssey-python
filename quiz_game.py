@@ -1,39 +1,78 @@
 
+import json
+from pathlib import Path
 from quiz import Quiz
 
 
 class QuizGame:
+   
     def __init__(self):
-        self.quizzes = [
-            Quiz(
-                "Python에서 화면에 문자를 출력하는 함수는?",
-                ["input()", "print()", "len()", "type()"],
-                2
-            ),
-            Quiz(
-                "Git에서 변경 사항을 스테이징하는 명령어는?",
-                ["git push", "git pull", "git add", "git log"],
-                3
-            ),
-            Quiz(
-                "Docker 컨테이너 목록을 확인하는 명령어는?",
-                ["docker ps", "docker build", "docker pull", "docker exec"],
-                1
-            ),
-            Quiz(
-                "Python에서 리스트를 만드는 기호는?",
-                ["{}", "()", "[]", "<>"],
-                3
-            ),
-            Quiz(
-                "Git에서 새로운 브랜치를 생성하고 전환하는 명령어는?",
-                ["git status", "git switch -c", "git merge", "git fetch"],
-                2
-            ),
-        ]
-
+        self.state_file = Path(__file__).resolve().parent / "state.json"
+        self.quizzes = []
         self.best_score = 0
+        self.load_state()
+ 
+    def load_state(self):
+        if not self.state_file.exists():
+            print("저장 파일이 없습니다. 기본 상태로 시작합니다.")
+            return
 
+        try:
+            with self.state_file.open("r", encoding="utf-8") as file:
+                data = json.load(file)
+
+            if not isinstance(data, dict):
+                raise ValueError("JSON 구조가 올바르지 않습니다.")
+
+            raw_quizzes = data["quizzes"]
+            best_score = data["best_score"]
+
+            if not isinstance(raw_quizzes, list):
+                raise ValueError("퀴즈 목록 형식이 올바르지 않습니다.")
+
+            if type(best_score) is not int or not 0 <= best_score <= 100:
+                raise ValueError("최고 점수 형식이 올바르지 않습니다.")
+
+            loaded_quizzes = [
+                Quiz(
+                    item["question"],
+                    item["choices"],
+                    item["answer"]
+                )
+                for item in raw_quizzes
+            ]
+
+            self.quizzes = loaded_quizzes
+            self.best_score = best_score
+
+            print(f"저장된 퀴즈 {len(self.quizzes)}개를 불러왔습니다.")
+
+        except (OSError, ValueError, KeyError, TypeError) as error:
+            print(f"저장 파일을 읽지 못했습니다: {error}")
+            print("빈 퀴즈 목록과 기본 점수로 시작합니다.")
+ 
+    def save_state(self):
+        data = {
+            "quizzes": [
+                {
+                    "question": quiz.question,
+                    "choices": quiz.choices,
+                    "answer": quiz.answer
+                }
+                for quiz in self.quizzes
+            ],
+            "best_score": self.best_score
+        }
+
+        try:
+            with self.state_file.open("w", encoding="utf-8") as file:
+                json.dump(data, file, ensure_ascii=False, indent=2)
+
+            print("퀴즈 데이터가 저장되었습니다.")
+
+        except OSError as error:
+            print(f"저장 중 오류가 발생했습니다: {error}")
+      
     def play(self):
         score = 0
         total = len(self.quizzes)
@@ -65,3 +104,4 @@ class QuizGame:
         if percentage > self.best_score:
             self.best_score = percentage
             print("새로운 최고 점수입니다!")
+            self.save_state()

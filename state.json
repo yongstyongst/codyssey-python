@@ -1,0 +1,55 @@
+{
+  "quizzes": [
+    {
+      "question": "Python에서 화면에 문자를 출력하는 함수는?",
+      "choices": [
+        "input()",
+        "print()",
+        "len()",
+        "type()"
+      ],
+      "answer": 2
+    },
+    {
+      "question": "Git에서 변경 사항을 스테이징하는 명령어는?",
+      "choices": [
+        "git push",
+        "git pull",
+        "git add",
+        "git log"
+      ],
+      "answer": 3
+    },
+    {
+      "question": "Docker 컨테이너 목록을 확인하는 명령어는?",
+      "choices": [
+        "docker ps",
+        "docker build",
+        "docker pull",
+        "docker exec"
+      ],
+      "answer": 1
+    },
+    {
+      "question": "Python에서 리스트를 만드는 기호는?",
+      "choices": [
+        "{}",
+        "()",
+        "[]",
+        "<>"
+      ],
+      "answer": 3
+    },
+    {
+      "question": "Git에서 새로운 브랜치를 생성하고 전환하는 명령어는?",
+      "choices": [
+        "git status",
+        "git switch -c",
+        "git merge",
+        "git fetch"
+      ],
+      "answer": 2
+    }
+  ],
+  "best_score": 100
+}
