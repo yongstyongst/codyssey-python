@@ -35,7 +35,7 @@ def main():
             elif number == 2:
                 game.add_quiz()
             elif number == 3:
-                print("📋 퀴즈 목록 기능은 개발 예정입니다.")
+                game.list_quizzes()
             elif number == 4:
                 print("🏆 점수 확인 기능은 개발 예정입니다.")
             elif number == 5:

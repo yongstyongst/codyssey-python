@@ -107,6 +107,22 @@ class QuizGame:
         self.save_state()
 
         print("새로운 퀴즈가 추가되었습니다!")
+
+    def list_quizzes(self):
+        print("\n========== 퀴즈 목록 ==========")
+
+        if not self.quizzes:
+            print("등록된 퀴즈가 없습니다.")
+            return
+
+        print(f"전체 퀴즈: {len(self.quizzes)}개")
+
+        for index, quiz in enumerate(self.quizzes, start=1):
+            print(f"\n[퀴즈 {index}]")
+            quiz.display()
+            print(f"정답: {quiz.answer}번")
+
+        print("\n===============================")
       
     def play(self):
         score = 0
