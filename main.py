@@ -33,7 +33,7 @@ def main():
             if number == 1:
                 game.play()
             elif number == 2:
-                print("📌 퀴즈 추가 기능은 개발 예정입니다.")
+                game.add_quiz()
             elif number == 3:
                 print("📋 퀴즈 목록 기능은 개발 예정입니다.")
             elif number == 4:

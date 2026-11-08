@@ -72,6 +72,41 @@ class QuizGame:
 
         except OSError as error:
             print(f"저장 중 오류가 발생했습니다: {error}")
+
+    def add_quiz(self):
+        print("\n새로운 퀴즈 추가")
+
+        question = input("문제를 입력하세요: ").strip()
+
+        if not question:
+            print("문제 내용은 비워둘 수 없습니다.")
+            return
+
+        choices = []
+
+        for number in range(1, 5):
+            choice = input(f"{number}번 선택지: ").strip()
+
+            if not choice:
+                print("선택지는 비워둘 수 없습니다.")
+                return
+
+            choices.append(choice)
+
+        while True:
+            answer = input("정답 번호 (1-4): ").strip()
+
+            if answer in ("1", "2", "3", "4"):
+                break
+
+            print("1~4 사이의 번호를 입력해 주세요.")
+
+        new_quiz = Quiz(question, choices, int(answer))
+
+        self.quizzes.append(new_quiz)
+        self.save_state()
+
+        print("새로운 퀴즈가 추가되었습니다!")
       
     def play(self):
         score = 0

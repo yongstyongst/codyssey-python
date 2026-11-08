@@ -49,6 +49,16 @@
         "git fetch"
       ],
       "answer": 2
+    },
+    {
+      "question": "Docker 이미지를 빌드하는 명령어는?",
+      "choices": [
+        "docker run",
+        "docker ps",
+        "docker build",
+        "docker stop"
+      ],
+      "answer": 3
     }
   ],
   "best_score": 100
