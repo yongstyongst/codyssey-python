@@ -123,6 +123,12 @@ class QuizGame:
             print(f"정답: {quiz.answer}번")
 
         print("\n===============================")
+
+    def show_score(self):
+        print("\n========== 점수 확인 ==========")
+        print(f"현재 최고 점수: {self.best_score}점")
+        print(f"등록된 퀴즈 수: {len(self.quizzes)}개")
+        print("===============================")
       
     def play(self):
         score = 0

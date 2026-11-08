@@ -37,7 +37,7 @@ def main():
             elif number == 3:
                 game.list_quizzes()
             elif number == 4:
-                print("🏆 점수 확인 기능은 개발 예정입니다.")
+                game.show_score()
             elif number == 5:
                 print("👋 퀴즈 게임을 종료합니다.")
                 break
