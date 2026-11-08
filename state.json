@@ -59,6 +59,16 @@
         "docker stop"
       ],
       "answer": 3
+    },
+    {
+      "question": "Git에서 현재 브랜치를 확인하는 명령어는?",
+      "choices": [
+        "git commit",
+        "git branch",
+        "git push",
+        "git clone"
+      ],
+      "answer": 2
     }
   ],
   "best_score": 100
