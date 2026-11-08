@@ -1,4 +1,4 @@
-
+from quiz_game import QuizGame
 def show_menu():
     print("\n" + "=" * 40)
     print("    Python · Git · Docker 기초 퀴즈")
@@ -12,6 +12,8 @@ def show_menu():
 
 
 def main():
+    game = QuizGame()
+
     while True:
         show_menu()
 
@@ -29,7 +31,7 @@ def main():
                 continue
 
             if number == 1:
-                print("📝 퀴즈 풀기 기능은 개발 예정입니다.")
+                game.play()
             elif number == 2:
                 print("📌 퀴즈 추가 기능은 개발 예정입니다.")
             elif number == 3:
