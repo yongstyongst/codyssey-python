@@ -334,14 +334,26 @@ JSON 파일의 형식이 잘못되면 저장 데이터를 정상적으로 읽을
 
 ## 12. 실행 화면 및 증빙
 
-다음 화면을 캡처하여 추가할 예정입니다.
+### 12.1 메인 메뉴
+![메인 메뉴](evidence/01-main-menu.png)
 
-- 프로그램 메인 메뉴
-- 퀴즈 풀이 및 결과
-- 사용자 문제 추가
-- 퀴즈 목록과 최고 점수
-- Git 커밋 및 브랜치 기록
-- Git Clone 및 Pull 실행 결과
+### 12.2 퀴즈 실행
+![퀴즈 실행](evidence/02-quiz-play.png)
+
+### 12.3 정답 판별
+![정답 판별](evidence/03-answer-check.png)
+
+### 12.4 최종 점수
+![최종 점수](evidence/04-final-score.png)
+
+### 12.5 최고 점수 확인
+![최고 점수 확인](evidence/05-best-score.png)
+
+### 12.6 퀴즈 목록
+![퀴즈 목록](evidence/06-quiz-list.png)
+
+### 12.7 새로운 퀴즈 추가
+![퀴즈 추가](evidence/07-add-quiz.png)
 
 ## 13. 회고 및 개선 방향
 
