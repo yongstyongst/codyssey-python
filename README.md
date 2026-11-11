@@ -618,3 +618,11 @@ Already up to date.
 | merge | 브랜치 병합 | merge: integrate quiz score history bonus feature |
 
 이러한 커밋 규칙을 사용하면 변경 목적을 쉽게 파악하고, 문제 발생 시 해당 커밋을 추적할 수 있습니다.
+
+### 브랜치·병합 그래프 실행 화면
+
+![Git 브랜치 및 병합 그래프](screenshots/git-branch-merge.png)
+
+### Git clone 및 pull 실행 화면
+
+![Git clone 및 pull 검증](screenshots/git-clone-pull.png)
