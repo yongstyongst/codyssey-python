@@ -1,5 +1,8 @@
 
 import json
+import os
+import tempfile
+import shutil
 from pathlib import Path
 from quiz import Quiz
 
@@ -8,70 +11,112 @@ class QuizGame:
    
     def __init__(self):
         self.state_file = Path(__file__).resolve().parent / "state.json"
+        self.backup_file = self.state_file.with_suffix(".json.bak")
+        self._load_failed = False
         self.quizzes = []
         self.best_score = 0
         self.load_state()
  
+    def _read_state(self, path):
+        with path.open("r", encoding="utf-8") as file:
+            data = json.load(file)
+        if not isinstance(data, dict):
+            raise ValueError("JSON 구조가 올바르지 않습니다.")
+        raw_quizzes = data["quizzes"]
+        score = data["best_score"]
+        if not isinstance(raw_quizzes, list):
+            raise ValueError("퀴즈 목록 형식이 올바르지 않습니다.")
+        if type(score) is not int or not 0 <= score <= 100:
+            raise ValueError("최고 점수 형식이 올바르지 않습니다.")
+        quizzes = []
+        for item in raw_quizzes:
+            question, choices, answer = item["question"], item["choices"], item["answer"]
+            if (not isinstance(question, str) or not question.strip()
+                    or not isinstance(choices, list) or len(choices) != 4
+                    or any(not isinstance(c, str) or not c.strip() for c in choices)
+                    or type(answer) is not int):
+                raise ValueError("문제 데이터 형식이 올바르지 않습니다.")
+            quizzes.append(Quiz(question, choices, answer))
+        return quizzes, score
+
+    def _atomic_copy(self, source, destination):
+        temporary = None
+        try:
+            with tempfile.NamedTemporaryFile(
+                mode="wb", dir=destination.parent, prefix=".quiz-",
+                suffix=".tmp", delete=False
+            ) as file:
+                temporary = Path(file.name)
+                with source.open("rb") as original:
+                    shutil.copyfileobj(original, file)
+                file.flush()
+                os.fsync(file.fileno())
+            os.replace(temporary, destination)
+        finally:
+            if temporary is not None:
+                temporary.unlink(missing_ok=True)
+
     def load_state(self):
-        if not self.state_file.exists():
+        self._load_failed = False
+        if not self.state_file.exists() and not self.backup_file.exists():
             print("저장 파일이 없습니다. 기본 상태로 시작합니다.")
             return
 
-        try:
-            with self.state_file.open("r", encoding="utf-8") as file:
-                data = json.load(file)
+        errors = (OSError, ValueError, KeyError, TypeError, UnicodeError)
+        if self.state_file.exists():
+            try:
+                self.quizzes, self.best_score = self._read_state(self.state_file)
+                print(f"저장된 퀴즈 {len(self.quizzes)}개를 불러왔습니다.")
+                return
+            except errors as error:
+                print(f"저장 파일을 읽지 못했습니다: {error}")
 
-            if not isinstance(data, dict):
-                raise ValueError("JSON 구조가 올바르지 않습니다.")
+        if self.backup_file.exists():
+            try:
+                quizzes, score = self._read_state(self.backup_file)
+                self._atomic_copy(self.backup_file, self.state_file)
+                self.quizzes, self.best_score = quizzes, score
+                print(f"백업에서 퀴즈 {len(quizzes)}개를 복원했습니다.")
+                return
+            except errors as error:
+                print(f"백업 파일을 복원하지 못했습니다: {error}")
 
-            raw_quizzes = data["quizzes"]
-            best_score = data["best_score"]
+        self._load_failed = True
+        print("복구할 수 없어 저장이 잠겼습니다. 원본 파일을 확인해 주세요.")
 
-            if not isinstance(raw_quizzes, list):
-                raise ValueError("퀴즈 목록 형식이 올바르지 않습니다.")
-
-            if type(best_score) is not int or not 0 <= best_score <= 100:
-                raise ValueError("최고 점수 형식이 올바르지 않습니다.")
-
-            loaded_quizzes = [
-                Quiz(
-                    item["question"],
-                    item["choices"],
-                    item["answer"]
-                )
-                for item in raw_quizzes
-            ]
-
-            self.quizzes = loaded_quizzes
-            self.best_score = best_score
-
-            print(f"저장된 퀴즈 {len(self.quizzes)}개를 불러왔습니다.")
-
-        except (OSError, ValueError, KeyError, TypeError) as error:
-            print(f"저장 파일을 읽지 못했습니다: {error}")
-            print("빈 퀴즈 목록과 기본 점수로 시작합니다.")
- 
     def save_state(self):
+        if self._load_failed:
+            print("⚠️ 손상된 저장 파일 보호를 위해 덮어쓰지 않습니다.")
+            return False
+
         data = {
             "quizzes": [
-                {
-                    "question": quiz.question,
-                    "choices": quiz.choices,
-                    "answer": quiz.answer
-                }
-                for quiz in self.quizzes
+                {"question": q.question, "choices": q.choices, "answer": q.answer}
+                for q in self.quizzes
             ],
-            "best_score": self.best_score
+            "best_score": self.best_score,
         }
-
+        temporary = None
         try:
-            with self.state_file.open("w", encoding="utf-8") as file:
+            with tempfile.NamedTemporaryFile(
+                mode="w", encoding="utf-8", dir=self.state_file.parent,
+                prefix=".quiz-", suffix=".tmp", delete=False
+            ) as file:
+                temporary = Path(file.name)
                 json.dump(data, file, ensure_ascii=False, indent=2)
-
-            print("퀴즈 데이터가 저장되었습니다.")
-
-        except OSError as error:
+                file.flush()
+                os.fsync(file.fileno())
+            # 백업을 먼저 갱신하여 원본 교체 실패에도 복구본을 보존합니다.
+            self._atomic_copy(temporary, self.backup_file)
+            os.replace(temporary, self.state_file)
+            print("퀴즈 데이터와 백업이 저장되었습니다.")
+            return True
+        except (OSError, ValueError, TypeError) as error:
             print(f"저장 중 오류가 발생했습니다: {error}")
+            return False
+        finally:
+            if temporary is not None:
+                temporary.unlink(missing_ok=True)
 
     def add_quiz(self):
         print("\n새로운 퀴즈 추가")
