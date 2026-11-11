@@ -484,3 +484,137 @@ QuizGame 클래스에 history 리스트와 show_history() 메서드를 추가하
 기존에는 최고 점수만 확인할 수 있었지만, 히스토리 기능을 추가하여 학습자의 응시 과정과 점수 변화를 확인할 수 있게 되었습니다.
 
 이를 통해 객체지향 설계, 리스트와 딕셔너리 활용, JSON 데이터 영속성, 기존 데이터와의 하위 호환성을 실습하였습니다.
+
+
+## Git 브랜치 생성 및 병합 증빙
+
+### 기능 브랜치 개발 과정
+
+점수 기록 히스토리 기능을 기존 프로그램과 독립적으로 개발하기 위해 `feature/quiz-history` 브랜치를 생성하였습니다.
+
+기능 구현 및 테스트 후 커밋을 생성하고, `--no-ff` 옵션을 사용하여 `main` 브랜치에 병합하였습니다.
+
+### 실제 Git 병합 그래프
+
+다음은 2026년 11월 11일 `git log --graph --oneline --decorate --all` 명령어로 확인한 실제 결과입니다.
+
+```text
+*   1d54795 (HEAD -> main, origin/main) merge: integrate quiz score history bonus feature
+|\
+| * 626be45 (feature/quiz-history) feat: add quiz score history with persistent JSON storage
+|/
+* 494a116 docs: add benchmark results for 1000 and 10000 quizzes
+* c8378ce fix: improve safe persistence and exit handling
+```
+
+### 병합 검증 결과
+
+- 기능 개발 브랜치: `feature/quiz-history`
+- 기능 구현 커밋: `626be45`
+- 병합 커밋: `1d54795`
+- 대상 브랜치: `main`
+- 병합 결과: 충돌 없이 성공
+- 원격 저장소: `origin/main`까지 푸시 완료
+
+병합 후 `git status -sb` 명령어에서 `main...origin/main`을 확인하여 로컬과 원격 브랜치의 동기화 상태를 검증하였습니다.
+
+
+## Git 협업 및 버전 관리 검증
+
+### 1. 브랜치 생성과 병합
+
+점수 기록 히스토리 기능을 독립적으로 개발하기 위해
+`feature/quiz-history` 브랜치를 사용하였습니다.
+
+기능 구현과 테스트 후 `main` 브랜치에 병합하였습니다.
+
+실제 명령어:
+
+```bash
+git switch -c feature/quiz-history
+git add README.md main.py quiz_game.py
+git commit -m "feat: add quiz score history with persistent JSON storage"
+git switch main
+git merge --no-ff feature/quiz-history -m "merge: integrate quiz score history bonus feature"
+git push origin main
+```
+
+실제 병합 그래프:
+
+```text
+*   1d54795 (main, origin/main) merge: integrate quiz score history bonus feature
+|\
+| * 626be45 (feature/quiz-history) feat: add quiz score history with persistent JSON storage
+|/
+* 494a116 docs: add benchmark results for 1000 and 10000 quizzes
+```
+
+`--no-ff` 병합을 통해 기능 개발 브랜치와 병합 이력을 구분하여 확인할 수 있었습니다.
+
+### 2. 별도 환경에서 Git Clone 검증
+
+기존 프로젝트와 분리된 새 디렉터리에서 GitHub 저장소 복원을 검증하였습니다.
+
+실행 환경: Windows PowerShell
+
+```powershell
+cd $HOME
+git clone https://github.com/yongstyongst/codyssey-python.git codyssey-clone-check
+cd codyssey-clone-check
+```
+
+실제 실행 결과:
+
+```text
+Cloning into 'codyssey-clone-check'...
+remote: Enumerating objects: 78, done.
+remote: Counting objects: 100% (78/78), done.
+Receiving objects: 100% (78/78), done.
+Resolving deltas: 100% (39/39), done.
+```
+
+별도 디렉터리에 저장소를 정상적으로 복제하였습니다.
+
+### 3. Git Pull 검증
+
+```powershell
+git pull origin main
+```
+
+실제 실행 결과:
+
+```text
+From https://github.com/yongstyongst/codyssey-python
+ * branch            main       -> FETCH_HEAD
+Already up to date.
+```
+
+원격 저장소의 최신 상태를 정상적으로 확인하였습니다.
+
+### 4. Git 커밋 규칙
+
+프로젝트의 변경 이력을 이해하기 쉽도록 기능 단위로 커밋합니다.
+
+**커밋 작성 원칙**
+
+1. 하나의 커밋에는 가능한 한 하나의 목적만 포함합니다.
+2. 기능 구현, 오류 수정, 문서 변경을 구분합니다.
+3. 임시 테스트 폴더와 개인 데이터 파일은 커밋에서 제외합니다.
+4. 커밋 전에 `git status`와 `git diff --cached`를 확인합니다.
+5. 커밋 메시지에는 변경 유형과 작업 내용을 작성합니다.
+
+**커밋 메시지 형식**
+
+```text
+<type>: <summary>
+```
+
+| 유형 | 의미 | 실제 사용 예시 |
+|---|---|---|
+| feat | 새로운 기능 | feat: add quiz score history with persistent JSON storage |
+| fix | 오류 수정 | fix: prevent division by zero for empty quiz list |
+| docs | 문서 보완 | docs: add benchmark results for 1000 and 10000 quizzes |
+| chore | 환경·설정 | chore: add Python project gitignore |
+| merge | 브랜치 병합 | merge: integrate quiz score history bonus feature |
+
+이러한 커밋 규칙을 사용하면 변경 목적을 쉽게 파악하고, 문제 발생 시 해당 커밋을 추적할 수 있습니다.
