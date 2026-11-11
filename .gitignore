@@ -12,3 +12,6 @@ venv/
 # Local secrets
 .env
 .env.*
+# Runtime backup and atomic save temporary files
+state.json.bak
+.quiz-*.tmp
