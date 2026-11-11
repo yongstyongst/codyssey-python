@@ -1,3 +1,4 @@
+
 # Python · Git · Docker 기초 퀴즈 게임
 
 **Codyssey 개발 입문 — Python 프로그래밍 미션**
@@ -53,6 +54,8 @@ codyssey-python/
 ├── README.md
 └── state.json.bak  # 실행 후 자동 생성되는 백업(로컬 보관)
 ```
+
+<img width="1672" height="941" alt="2 과제 설명 (1)" src="https://github.com/user-attachments/assets/6e82f6e8-c228-4e89-b956-e68595b0fd10" />
 
 ### 파일별 역할
 
@@ -118,6 +121,8 @@ python3 main.py
 사용자는 메뉴 번호를 입력하여 원하는 기능을 실행할 수 있습니다.
 
 ## 6. 주요 구현 기능
+
+<img width="1672" height="941" alt="2 과제 설명 (2)" src="https://github.com/user-attachments/assets/5036feb7-96c5-4944-81db-0797277e58c7" />
 
 ### 6.1 퀴즈 풀기
 
@@ -187,6 +192,8 @@ python3 main.py
 이러한 구조를 통해 메뉴 처리, 개별 문제 관리, 게임 운영을 구분하여 코드의 역할을 명확하게 하였습니다.
 
 ## 8. JSON 데이터 영속성
+
+<img width="1774" height="887" alt="2 과제 설명 (3)" src="https://github.com/user-attachments/assets/7f5d6fe5-0b53-4b22-adaf-3ed22ac07c06" />
 
 프로그램 종료 후에도 등록된 퀴즈와 최고 점수가 유지되도록 JSON 파일을 사용하였습니다.
 
@@ -285,6 +292,8 @@ JSON 파일의 형식이 잘못되면 저장 데이터를 정상적으로 읽을
 퀴즈 정답 입력 중 `Ctrl+C`, 메인 메뉴에서 `Ctrl+D`를 사용하여 안전하게 종료되는 것을 확인하였습니다.
 
 ## 10. Git 및 GitHub 활용
+
+<img width="1774" height="887" alt="2 과제 설명 (4)" src="https://github.com/user-attachments/assets/4eef178e-f404-49a8-a9d0-eb9ce7db2fa4" />
 
 기능 단위로 변경 사항을 기록하기 위해 Git을 사용하였습니다.
 
