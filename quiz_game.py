@@ -5,6 +5,8 @@ import tempfile
 import shutil
 from pathlib import Path
 from quiz import Quiz
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
 
 class QuizGame:
@@ -15,6 +17,7 @@ class QuizGame:
         self._load_failed = False
         self.quizzes = []
         self.best_score = 0
+        self.history = []
         self.load_state()
  
     def _read_state(self, path):
@@ -37,7 +40,12 @@ class QuizGame:
                     or type(answer) is not int):
                 raise ValueError("문제 데이터 형식이 올바르지 않습니다.")
             quizzes.append(Quiz(question, choices, answer))
-        return quizzes, score
+        history = data.get("history", [])
+
+        if not isinstance(history, list):
+            raise ValueError("학습 기록 형식이 올바르지 않습니다.")
+
+        return quizzes, score, history
 
     def _atomic_copy(self, source, destination):
         temporary = None
@@ -65,7 +73,7 @@ class QuizGame:
         errors = (OSError, ValueError, KeyError, TypeError, UnicodeError)
         if self.state_file.exists():
             try:
-                self.quizzes, self.best_score = self._read_state(self.state_file)
+                self.quizzes, self.best_score, self.history = self._read_state(self.state_file)
                 print(f"저장된 퀴즈 {len(self.quizzes)}개를 불러왔습니다.")
                 return
             except errors as error:
@@ -73,9 +81,10 @@ class QuizGame:
 
         if self.backup_file.exists():
             try:
-                quizzes, score = self._read_state(self.backup_file)
+                quizzes, score, history = self._read_state(self.backup_file)
                 self._atomic_copy(self.backup_file, self.state_file)
                 self.quizzes, self.best_score = quizzes, score
+                self.history = history
                 print(f"백업에서 퀴즈 {len(quizzes)}개를 복원했습니다.")
                 return
             except errors as error:
@@ -95,6 +104,7 @@ class QuizGame:
                 for q in self.quizzes
             ],
             "best_score": self.best_score,
+            "history": self.history,
         }
         temporary = None
         try:
@@ -207,7 +217,39 @@ class QuizGame:
 
         print(f"\n최종 점수: {score}/{total} ({percentage}점)")
 
+
         if percentage > self.best_score:
             self.best_score = percentage
             print("새로운 최고 점수입니다!")
-            self.save_state()
+
+        record = {
+            "date": datetime.now(ZoneInfo("Asia/Seoul")).strftime("%Y-%m-%d %H:%M:%S"),
+            "total": total,
+            "correct": score,
+            "score": percentage
+        }
+
+        self.history.append(record)
+
+        if self.save_state():
+            print("학습 기록이 저장되었습니다.")
+
+
+    def show_history(self):
+        print("\n========== 학습 기록 ==========")
+
+        if not self.history:
+            print("저장된 학습 기록이 없습니다.")
+            return
+
+        for index, record in enumerate(self.history, start=1):
+            print(
+                f"{index}회차 | {record['date']} | "
+                f"{record['total']}문제 | "
+                f"{record['correct']}개 정답 | "
+                f"{record['score']}점"
+            )
+
+        print(f"\n총 응시 횟수: {len(self.history)}회")
+        print(f"최고 점수: {self.best_score}점")
+        print("================================")
