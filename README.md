@@ -681,12 +681,11 @@ Already up to date.
 
 ![Git clone 및 pull 검증](screenshots/git-clone-pull.png)
 
+<br>
 
 ## 요구사항 변경 시 수정 대상 및 유지보수 지침
 
 프로그램의 요구사항이 변경될 경우 영향을 받는 파일과 메서드를 사전에 확인하여 수정 범위를 결정합니다.
-
-<br>
 
 ### 1. 요구사항별 수정 대상
 
